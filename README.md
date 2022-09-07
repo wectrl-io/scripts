@@ -1,2 +1,3 @@
 # dreamtomation_scripts
-Scripts and Docker configurations
+
+Shell scripts and Docker configurations for Client environment setup
