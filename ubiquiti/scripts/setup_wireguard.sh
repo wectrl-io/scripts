@@ -16,13 +16,13 @@ openssl rand -base64 32 > /config/auth/peer2.preshared
 
 # read -p 'External IP: ' ext_ip
 
-echo "192.168.68.215" > /tmp/ext_ip
+echo "109.199.153.247" > /tmp/ext_ip
 
 echo "10.0.1.1" > /tmp/wg0_ip
 echo "10.0.1.2" > /tmp/peer1_ip
 echo "10.0.1.3" > /tmp/peer2_ip
 
-echo "192.168.1.0/24" > /tmp/local_subnet # That we want to access
+echo "10.1.1.0/24" > /tmp/local_subnet # Subnet That we want to access
 
 # Session #
 # make sure script is run as group vyattacfg
