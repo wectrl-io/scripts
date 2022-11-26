@@ -1,9 +1,9 @@
 #!/bin/vbash
 
 # Install
-cd /tmp
-curl -OL https://github.com/WireGuard/wireguard-vyatta-ubnt/releases/download/1.0.20220627-1/e50-v2-v1.0.20220627-v1.0.20210914.deb
-sudo dpkg -i e50-v2-v1.0.20220627-v1.0.20210914.deb
+# cd /tmp
+# curl -OL https://github.com/WireGuard/wireguard-vyatta-ubnt/releases/download/1.0.20220627-1/e50-v2-v1.0.20220627-v1.0.20210914.deb
+# sudo dpkg -i e50-v2-v1.0.20220627-v1.0.20210914.deb
 
 # Setup 
 wg genkey | tee /config/auth/wg0.private | wg pubkey >  /config/auth/wg0.public
@@ -60,6 +60,9 @@ $run commit
 $run save
 $run end
 
+
+echo ""
+echo ""
 echo "--- WG Info ---"
 echo "WG Server Private Key:"
 cat /config/auth/wg0.private
