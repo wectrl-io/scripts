@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 # Run from PC
 
 # echo 'Choose router ip:'
