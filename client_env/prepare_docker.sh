@@ -1,3 +1,4 @@
+#!/bin/sh
 
 echo "Updating system packages..."
 sudo apt-get update && sudo apt-get upgrade -y
@@ -9,7 +10,7 @@ echo ""
 
 echo "Installing dependencies"
 
-sudo apt-get install \
+sudo apt-get install -y \
     ca-certificates \
     curl \
     gnupg \
