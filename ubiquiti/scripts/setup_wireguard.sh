@@ -57,6 +57,9 @@ $run set firewall name WAN_LOCAL rule 20 protocol udp
 $run set firewall name WAN_LOCAL rule 20 description 'WireGuard'
 $run set firewall name WAN_LOCAL rule 20 destination port $( cat /tmp/wg/port_num )
 
+echo "Setup DNS to work on VPN..."
+$run set service dns forwarding listen-on wg0
+
 echo "Commiting and saving..."
 $run commit
 $run save
