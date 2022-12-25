@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ -x "$(command -v docker)" ]; then
+    echo "Docker is already installed!"
+    exit 0
+else
+
 echo "Updating system packages..."
 sudo apt-get update && sudo apt-get upgrade -y
 echo ""
