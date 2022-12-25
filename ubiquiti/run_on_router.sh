@@ -53,7 +53,7 @@ if [[ $choice == y* ]]; then
 fi
 
 echo 'Choose a script from the following:'
-select script in scripts/*; do test -n "$script" && break; echo ">>> Invalid Selection"; done
+select script in scripts/*.sh; do test -n "$script" && break; echo ">>> Invalid Selection"; done
 echo ""
 
 # Scripts pre-launch #
