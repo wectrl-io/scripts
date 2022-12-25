@@ -1,3 +1,4 @@
+#!/bin/sh
 
 echo "Setting up reqired packages..."
 sudo apt-get install -y libffi-dev libssl-dev python3-dev python3 python3-pip
