@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+
+COMMAND="$1"
+shift 1
+COMMAND_ARGS=("${@}")
+
+FOLDER_ROOT=$(dirname $(dirname $(dirname $(readlink -f "$0"))))
+HOST_OS=""
+
+CONN_USER=""
+CONN_IP=0
+#
+# UTILS
+#
+# Check if a command exists in the functions
+function remote-utils:utils:validate() {
+	if [ "$(type -t remote-utils:command:"$COMMAND")" = function ]; then
+		return 0
+	elif [ -z "$COMMAND" ]; then
+		remote-utils:command:help
+		return 1
+	else
+		echo "Unknown command: $COMMAND";
+		return 1
+	fi
+}
+
+function remote-utils:remote:exec_script() {
+	echo "Executing script on remote: $1"
+
+    ssh -t $CONN_USER@$CONN_IP "bash -s" < $1
+}
+
+# CHeck if an exec is installed - docker and etc...
+function remote-utils:exists() {
+	command -v "$1" > /dev/null 2>&1
+}
+
+# Determine OS
+function remote-utils::determine_os() {
+	case "$OSTYPE" in
+		solaris*) os="SOLARIS" ;;
+		darwin*)	os="MAC" ;;
+		linux*)	 os="LINUX" ;;
+		bsd*)		 os="BSD" ;;
+		msys*)		os="WINDOWS" ;;
+		cygwin*)	os="WINDOWS" ;;
+		*)				os="unknown: $OSTYPE" ;;
+	esac
+
+	HOST_OS=$os
+}
+
+# Load an env file
+function remote-utils::load_vars() {
+	# shellcheck disable=SC2046
+	export $(grep -v '^#' "$1" | xargs);
+}
+
+# Init remote side
+function remote-utils::init_connection() {
+	# Check if CONN_IP is set
+	if [ ! "$CONN_IP" -eq 0 ]; then
+		return 0
+	fi
+
+	echo ""
+
+	ssh_status=1	# As init
+
+	while [[ ! $ssh_status -eq 0 ]]; do
+		# Get an actual IP address
+		ip=0
+		while [[ ! $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; do
+			read -p "IP: " ip
+		done
+
+		read -p "Username (for $ip): " user
+
+		read -e -p "Gain access to remote? (Y/n) blank = no " choice
+		echo ""
+		if [[ $choice == y* ]]; then
+			echo "You will be asked for a password twice..."
+			# checking for ssh keys on system...
+			if [ ! -f ~/.ssh/id_rsa.pub ]; then
+					echo "Generating an ssh key for machine..."
+					ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
+			fi
+			echo "Gaining access to remote..."
+			ssh-copy-id -i $HOME/.ssh/id_rsa.pub $user@$ip
+
+			# Force sudo to not require a password
+			echo "Forcing sudo to not require a password..."
+			ssh -t $user@$ip echo "$USER ALL=NOPASSWD: ALL" | sudo tee -a /etc/sudoers
+		fi
+
+		# Test connection
+		echo "Verifying connection..."
+		ssh -o BatchMode=yes -o ConnectTimeout=5 $user@$ip exit
+		ssh_status=$?
+		echo ""
+
+		if ! [[ $ssh_status -eq 0 ]]; then
+			echo "Verification Successful!"
+			echo "SSH connection to $ip is NOT good"
+			echo ""
+		else
+			echo "Verification Successful!"
+			echo "SSH connection to $ip is good"
+			echo ""
+		fi
+	done
+
+	CONN_IP=$ip
+	CONN_USER=$user
+}
+
+# Print 
+function remote-utils::echo_ip() {
+	echo "========================================"
+	echo "======= Connected to $ip ======="
+	echo "========================================"
+}
+
+#
+# COMMANDS
+#
+
+function remote-utils:command:help() {
+		echo "
+	Remote Utils
+	Commands
+
+	remote-utils help											print this help message
+	remote-utils interactive									run interactive menu
+	remote-utils init											install dependencies
+	remote-utils setup											setup remote repos
+"
+}
+
+function remote-utils:command:interactive() {
+	while true; do
+		remote-utils::echo_ip
+
+		echo "
+		Remote Utils
+		Interactive Menu
+
+		1. Init
+		2. Setup
+
+		9. Test
+		0. Exit
+		"
+
+		# Read user input for menu option until it verifies a number and is the range of options
+		read -p "Enter a number: " choice
+		case $choice in
+			1 ) remote-utils:command:init;;
+			2 ) remote-utils:command:setup;;
+
+			9 ) remote-utils:command:test;;
+			0 ) break;;
+			* ) echo "Invalid input. Please enter a number.";;
+		esac
+	done
+}
+
+function remote-utils:command:init() {
+	echo "Init..."
+
+}
+
+function remote-utils:command:setup() {
+	echo "Setup..."
+}
+
+function remote-utils:command:test() {
+	remote-utils:remote:exec_script "$FOLDER_ROOT/linux/scripts/test.sh"
+}
+
+#
+# MAIN
+#
+
+function main() {
+	# Checks
+	if [ -z "$REMOTE_UTILS_DIR" ]; then
+		echo "\$REMOTE_UTILS_DIR is unset";
+		return 1;
+	fi;
+	cd "$REMOTE_UTILS_DIR" || exit 1
+
+	if ! remote-utils:utils:validate; then
+		return 1
+	fi
+
+	remote-utils::determine_os
+	echo "Host OS: $HOST_OS"
+
+	echo "Doing the thing..."
+	remote-utils::init_connection
+	echo "IP: $CONN_IP"
+
+	# Load vars
+	remote-utils::load_vars "$REMOTE_UTILS_DIR/.env" > /dev/null
+
+	# Run command
+	remote-utils:command:"$COMMAND" "${COMMAND_ARGS[*]}"
+
+	# Clear COMMAND and COMMAND_ARGS
+	# unset COMMAND
+	# unset COMMAND_ARGS
+
+	# Pass exit code
+	return $?
+}
+
+main

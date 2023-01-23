@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Testing!"
-echO ""
+echo ""
 
 echo "Path is: $PATH"
 echo "PWD is: $PWD"

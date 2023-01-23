@@ -74,7 +74,11 @@ fi
 
 if [[ "$script" == *"wireguard"* ]]; then
   if [[ "$script" == *"setup_wireguard"* ]]; then
+    # Ask user for folder name for config files  
+    read -p "Folder name for config files: " folder_name
+
     echo "Pulling new files from setup script..."
-    scp $user@$ip:/tmp/wg_configs ./output/wg_configs
+    mkdir -p ./output/$folder_name
+    scp $user@$ip:/tmp/wg_configs ./output/$folder_name/wg_configs
   fi
 fi
