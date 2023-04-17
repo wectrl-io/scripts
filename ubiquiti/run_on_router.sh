@@ -40,13 +40,15 @@ ssh-keygen -R $ip
 echo ""
 
 # Ask user if they want to copy public key to router
-read -e -p "Copy public key to router? (Y/n) blank = no " choice
+read -e -p "Copy public key to router? (N/y)" choice
 echo ""
 if [[ $choice == y* ]]; then
-    echo "Gaining access to router..."
+    echo "Copying local ssh key access to router..."
     
     # Send public ssh key to router
     scp ~/.ssh/id_rsa.pub $user@$ip:/tmp/ubnt.pub
+
+    echo "Running ssh key init script..."
 
     # Execute script to add public key on router
     ssh -o "StrictHostKeyChecking no" $user@$ip "/bin/vbash -s" < scripts/helpers/init_ssh_key.sh
@@ -78,7 +80,7 @@ if [[ "$script" == *"wireguard"* ]]; then
     read -p "Folder name for config files: " folder_name
 
     echo "Pulling new files from setup script..."
-    mkdir -p ./output/$folder_name
-    scp $user@$ip:/tmp/wg_configs ./output/$folder_name/wg_configs
+    mkdir -p ./output/$folder_name/wg_configs
+    scp -r $user@$ip:/tmp/wg_configs ./output/$folder_name/wg_configs
   fi
 fi
