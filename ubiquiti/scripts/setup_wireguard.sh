@@ -23,7 +23,8 @@ if ! dpkg -s wireguard >/dev/null 2>&1; then
 
     deb_url="https://github.com/WireGuard/wireguard-vyatta-ubnt/releases/download/$tag/$BOARD-$OS-$prefix"
     curl -L -o "/tmp/wireguard-$BOARD-$tag.deb" "$deb_url"
-    dpkg -i "/tmp/wireguard-$BOARD-$tag.deb"
+
+    sudo dpkg -i "/tmp/wireguard-$BOARD-$tag.deb"
     rm "/tmp/wireguard-$BOARD-$tag.deb"
 fi
 
@@ -126,44 +127,44 @@ echo "-----"
 echo "peer1 config > $out_files_dir/peer1.conf" 
 echo ""
 echo "[Interface]" > $out_files_dir/peer1.conf
-echo "PrivateKey = $(cat /config/auth/peer1.private)" > $out_files_dir/peer1.conf
-echo "ListenPort = $( cat /tmp/wg/port_num )" > $out_files_dir/peer1.conf
-echo "Address = $( cat /tmp/wg/peer1_ip )/24" > $out_files_dir/peer1.conf
-echo "DNS = $( cat /tmp/wg/dns )" > $out_files_dir/peer1.conf
-echo "" > $out_files_dir/peer1.conf
-echo "[Peer]" > $out_files_dir/peer1.conf
-echo "PublicKey = $(cat /config/auth/wg0.public)" > $out_files_dir/peer1.conf
-echo "PresharedKey = $(cat /config/auth/peer1.preshared)" > $out_files_dir/peer1.conf
-echo "AllowedIPs = $( cat /tmp/wg/wg0_ip )/32, $( cat /tmp/wg/local_subnet )" > $out_files_dir/peer1.conf
-echo "Endpoint = $( cat /tmp/wg/ext_ip ):$( cat /tmp/wg/port_num )"  > $out_files_dir/peer1.conf  # Ext ip
+echo "PrivateKey = $(cat /config/auth/peer1.private)" >> $out_files_dir/peer1.conf
+echo "ListenPort = $( cat /tmp/wg/port_num )" >> $out_files_dir/peer1.conf
+echo "Address = $( cat /tmp/wg/peer1_ip )/24" >> $out_files_dir/peer1.conf
+echo "DNS = $( cat /tmp/wg/dns )" >> $out_files_dir/peer1.conf
+echo "" >> $out_files_dir/peer1.conf
+echo "[Peer]" >> $out_files_dir/peer1.conf
+echo "PublicKey = $(cat /config/auth/wg0.public)" >> $out_files_dir/peer1.conf
+echo "PresharedKey = $(cat /config/auth/peer1.preshared)" >> $out_files_dir/peer1.conf
+echo "AllowedIPs = $( cat /tmp/wg/wg0_ip )/32, $( cat /tmp/wg/local_subnet )" >> $out_files_dir/peer1.conf
+echo "Endpoint = $( cat /tmp/wg/ext_ip ):$( cat /tmp/wg/port_num )" >> $out_files_dir/peer1.conf  # Ext ip
 echo "-----"
 echo "peer2 config > $out_files_dir/peer2.conf"
 echo ""
 echo "[Interface]" > $out_files_dir/peer2.conf
-echo "PrivateKey = $(cat /config/auth/peer2.private)" > $out_files_dir/peer2.conf
-echo "ListenPort = $( cat /tmp/wg/port_num )" > $out_files_dir/peer2.conf
-echo "Address = $( cat /tmp/wg/peer2_ip )/24" > $out_files_dir/peer2.conf
-echo "DNS = $( cat /tmp/wg/dns )" > $out_files_dir/peer2.conf
-echo "" > $out_files_dir/peer2.conf
-echo "[Peer]" > $out_files_dir/peer2.conf
-echo "PublicKey = $(cat /config/auth/wg0.public)" > $out_files_dir/peer2.conf
-echo "PresharedKey = $(cat /config/auth/peer2.preshared)" > $out_files_dir/peer2.conf
-echo "AllowedIPs = $( cat /tmp/wg/wg0_ip )/32, $( cat /tmp/wg/local_subnet )" > $out_files_dir/peer2.conf
-echo "Endpoint = $( cat /tmp/wg/ext_ip ):$( cat /tmp/wg/port_num )" > $out_files_dir/peer2.conf  # Ext ip
+echo "PrivateKey = $(cat /config/auth/peer2.private)" >> $out_files_dir/peer2.conf
+echo "ListenPort = $( cat /tmp/wg/port_num )" >> $out_files_dir/peer2.conf
+echo "Address = $( cat /tmp/wg/peer2_ip )/24" >> $out_files_dir/peer2.conf
+echo "DNS = $( cat /tmp/wg/dns )" >> $out_files_dir/peer2.conf
+echo "" >> $out_files_dir/peer2.conf
+echo "[Peer]" >> $out_files_dir/peer2.conf
+echo "PublicKey = $(cat /config/auth/wg0.public)" >> $out_files_dir/peer2.conf
+echo "PresharedKey = $(cat /config/auth/peer2.preshared)" >> $out_files_dir/peer2.conf
+echo "AllowedIPs = $( cat /tmp/wg/wg0_ip )/32, $( cat /tmp/wg/local_subnet )" >> $out_files_dir/peer2.conf
+echo "Endpoint = $( cat /tmp/wg/ext_ip ):$( cat /tmp/wg/port_num )" >> $out_files_dir/peer2.conf  # Ext ip
 echo "-----"
 echo "peer3 config > $out_files_dir/peer3.conf"
 echo ""
-echo "[Interface]" > $out_files_dir/peer2.conf
-echo "PrivateKey = $(cat /config/auth/peer3.private)" > $out_files_dir/peer2.conf
-echo "ListenPort = $( cat /tmp/wg/port_num )" > $out_files_dir/peer2.conf
-echo "Address = $( cat /tmp/wg/peer3_ip )/24" > $out_files_dir/peer2.conf
-echo "DNS = $( cat /tmp/wg/dns )" > $out_files_dir/peer2.conf
-echo "" > $out_files_dir/peer2.conf
-echo "[Peer]" > $out_files_dir/peer2.conf
-echo "PublicKey = $(cat /config/auth/wg0.public)" > $out_files_dir/peer2.conf
-echo "PresharedKey = $(cat /config/auth/peer3.preshared)" > $out_files_dir/peer2.conf
-echo "AllowedIPs = $( cat /tmp/wg/wg0_ip )/32, $( cat /tmp/wg/local_subnet )" > $out_files_dir/peer2.conf
-echo "Endpoint = $( cat /tmp/wg/ext_ip ):$( cat /tmp/wg/port_num )"  > $out_files_dir/peer2.conf  # Ext ip
+echo "[Interface]" > $out_files_dir/peer3.conf
+echo "PrivateKey = $(cat /config/auth/peer3.private)" >> $out_files_dir/peer3.conf
+echo "ListenPort = $( cat /tmp/wg/port_num )" >> $out_files_dir/peer3.conf
+echo "Address = $( cat /tmp/wg/peer3_ip )/24" >> $out_files_dir/peer3.conf
+echo "DNS = $( cat /tmp/wg/dns )" >> $out_files_dir/peer3.conf
+echo "" >> $out_files_dir/peer3.conf
+echo "[Peer]" >> $out_files_dir/peer3.conf
+echo "PublicKey = $(cat /config/auth/wg0.public)" >> $out_files_dir/peer3.conf
+echo "PresharedKey = $(cat /config/auth/peer3.preshared)" >> $out_files_dir/peer3.conf
+echo "AllowedIPs = $( cat /tmp/wg/wg0_ip )/32, $( cat /tmp/wg/local_subnet )" >> $out_files_dir/peer3.conf
+echo "Endpoint = $( cat /tmp/wg/ext_ip ):$( cat /tmp/wg/port_num )" >> $out_files_dir/peer3.conf  # Ext ip
 
 echo "-----"
 echo "Done!"
